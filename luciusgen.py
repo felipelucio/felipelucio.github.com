@@ -83,7 +83,7 @@ class LuciusGen:
                 post.metadata['slug'] = slug
 
             if not post.metadata.get('category'):
-                post.metadata['category'] = conf.DEFAULT_CATEGORY
+                post.metadata['category'] = self.conf.DEFAULT_CATEGORY
 
             # generate the html file
             post_data = {
@@ -108,9 +108,9 @@ class LuciusGen:
             return True
 
     def copy_post_files(self, root_dir):
-        for src_dir in conf.COPY_DIRS:
+        for src_dir in self.conf.COPY_DIRS:
             files_src = os.path.join(self.cwd, root_dir, src_dir)
-            files_dst = os.path.join(self.cwd, conf.OUTPUT_DIR, src_dir)
+            files_dst = os.path.join(self.cwd, self.conf.OUTPUT_DIR, src_dir)
             if os.path.isdir(files_src):
                 print('* copying "{}" to "{}"'.format(files_src, files_dst))
                 if os.path.exists(files_dst):
@@ -121,14 +121,20 @@ class LuciusGen:
 
     def copy_template_files(self):
         for _dir in ['css', 'js', 'img']:
-            files_src = os.path.join(self.cwd, conf.TEMPLATE_DIR, _dir)
-            files_dst = os.path.join(self.cwd, conf.OUTPUT_DIR, _dir)
+            files_src = os.path.join(self.cwd, self.conf.TEMPLATE_DIR, _dir)
+            files_dst = os.path.join(self.cwd, self.conf.OUTPUT_DIR, _dir)
             if os.path.isdir(files_src):
                 if os.path.exists(files_dst):
                     for f in os.listdir(files_src):
                         shutil.copy2(os.path.join(files_src, f), files_dst)
                 else:
                     shutil.copytree(files_src, files_dst)
+
+    def generate_CNAME(self):
+        if self.conf.CNAME:
+            cname_file = os.path.join(self.cwd, self.conf.OUTPUT_DIR, 'CNAME')
+            with open(cname_file, 'w', encoding='utf-8') as file:
+                file.write(self.conf.CNAME)
 
     def clear_output(self):
         output_dir = os.path.join(self.cwd, conf.OUTPUT_DIR)
@@ -158,6 +164,7 @@ class LuciusGen:
         self.copy_template_files()
         self.generate_index()
         self.generate_categories()
+        self.generate_CNAME()
         self.save_db()
 
     def generate_all(self):
@@ -171,6 +178,7 @@ class LuciusGen:
         self.copy_template_files()
         self.generate_index()
         self.generate_categories()
+        self.generate_CNAME()
         self.save_db()
 
     def generate_categories(self):
