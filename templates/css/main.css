@@ -1,0 +1,82 @@
+:root {
+    --menu-color: #ff0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/*************
+* NAV MENU
+*************/
+.nav-menu {
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    background: #fff;
+    width: 7em;
+    left: -10em;
+    box-shadow: .2em 0 1.5em rgba(0, 0, 0, 0.4);
+    transition: left 1s;
+}
+
+.nav-menu.show {
+    left: 0;
+}
+
+@media (min-width: 1024px) {
+    .nav-menu {
+        left:  0;
+    }   
+}
+
+.nav-menu a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center;
+    box-sizing: border-box;
+    border-right: .2em solid transparent;
+    border-bottom: .01em solid #eee;
+    border-radius: 0;
+}
+
+.nav-menu a:hover {
+    border-right-color: var(--menu-color);
+    color: var(--menu-color);
+    background: #fff;
+}
+
+.nav-menu ion-icon {
+    display: block;
+}
+
+.nav-menu .active {
+    border-right-color: var(--menu-color);
+    color: var(--menu-color);
+}
+
+#toggle-menu-button {
+    position: fixed;
+    top:  1rem;
+    right:  1rem;
+}
+
+
+/**************
+* MAIN CONTENT
+**************/
+.content {
+    height: 100vh;
+}
+
+@media (min-width: 1024px) {
+    .content {
+        padding-left: 7.5rem;
+    }
+}
+
+.page {
+    min-height: 100vh;
+}
+
