@@ -2,11 +2,12 @@
 
 {% block content %}
   <section id="home" class="section page">
-    <h1>{{ site.title }}
+    <h1>{{ site.title }}</h1>
   </section>
 
   <section id="whoami" class="section page">
-    <h1>Quem sou</h1>
+    <h1>Quem sou?</h1>
+    {% include 'whoami.html' %}
   </section>
 
   <section id="jobs" class="section page">
@@ -23,7 +24,7 @@
       <ul>
       {% for post in posts %}
         <li>
-          <span>{{post.date}}</span> - <a href="{{ blog_path }}/{{ post.slug }}.html">{{post.title}}</a> 
+          <span>{{ post.date }}</span> - <a href="{{ blog_path }}/{{ post.slug }}.html">{{ post.title }}</a> 
         </li>
       {% endfor %}
       </ul>

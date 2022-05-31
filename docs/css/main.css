@@ -71,12 +71,13 @@ html {
 }
 
 @media (min-width: 1024px) {
-    .content {
+    .main-content {
         padding-left: 7.5rem;
     }
 }
 
 .page {
     min-height: 100vh;
+    box-shadow: 1px 0 10px 2px gainsboro;
 }
 
