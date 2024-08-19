@@ -1,37 +1,15 @@
 {% extends "layout.html" %}
 
 {% block content %}
-  <section id="home" class="section page">
-    <h1>{{ site.title }}</h1>
-  </section>
-
-  <section id="whoami" class="section page">
-    <h1>Quem sou?</h1>
-    {% include 'whoami.html' %}
-  </section>
-
-  <section id="jobs" class="section page">
-    <h1>Portfólio</h1>
-  </section>
-
-  <section id="resume" class="section page">
-    <h1>Currículo</h1>
-  </section>
-
-  <section id="blog" class="section page">
-    <h1>Posts</h1>
-    <section>
-      <ul>
-      {% for post in posts %}
-        <li>
-          <span>{{ post.date }}</span> - <a href="{{ blog_path }}/{{ post.slug }}.html">{{ post.title }}</a> 
-        </li>
-      {% endfor %}
-      </ul>
-    </section>
-  </section>
-
-  <section id="contact" class="section page">
-    <h1>Contato</h1>
-  </section>
+<h2>Posts</h2>
+<article>
+  <ul class="no-bullet">
+  {% for post in posts %}
+    <li>
+      <span>{{ post.date }}</span> - [<a href="{{ blog_path }}/category/{{ post.category }}.html">{{ post.category }}</a>]
+      <a href="{{ blog_path }}/{{ post.slug }}.html">{{ post.title }}</a> 
+    </li>
+  {% endfor %}
+  </ul>
+</article>
 {% endblock %}

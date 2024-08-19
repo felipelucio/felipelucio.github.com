@@ -1,83 +1,63 @@
 :root {
-    --menu-color: #ff0;
+    --text-color: rgb(204, 204, 204);
+    --bg-color: #222222;
+    --alt-bg-color: #333333;
+    --link-color: rgb(118, 157, 255);
+    --visited-link-color: rgb(39, 99, 250);
+    --header-color: rgb(238, 238, 238);
 }
 
 html {
     scroll-behavior: smooth;
 }
 
-/*************
-* NAV MENU
-*************/
-.nav-menu {
-    position: fixed;
-    height: 100vh;
-    top: 0;
-    background: #fff;
-    width: 7em;
-    left: -10em;
-    box-shadow: .2em 0 1.5em rgba(0, 0, 0, 0.4);
-    transition: left 1s;
+body {
+    position: relative;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: 12pt;
+    font-family: sans-serif;
+    margin: 0 auto;
+    max-width: 768px;
+    padding: 0 10px;
+    line-height: 1.6;
 }
 
-.nav-menu.show {
-    left: 0;
+h1, h2, h3, h4, h5, h6 {
+    color: var(--header-color);
+    line-height: 1.2;
+}
+h1 { text-align: center; }
+h2 { margin: 0.2em 0; }
+address { font-style: normal; }
+
+#nav-menu { text-align: center; }
+#nav-menu a { padding: 0 0.5em; }
+.to-top-link {
+    text-decoration: none;
+    position: sticky;
+    float: right;
+    margin-right: 1em;
+    bottom: 1em;
 }
 
-@media (min-width: 1024px) {
-    .nav-menu {
-        left:  0;
-    }   
+.codehilite {
+    background-color: var(--alt-bg-color);
 }
+a { color: var(--link-color); }
+a:hover { color: var(--visited-link-color); }
+ul.no-bullet { list-style: none; }
 
-.nav-menu a {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-items: center;
-    box-sizing: border-box;
-    border-right: .2em solid transparent;
-    border-bottom: .01em solid #eee;
-    border-radius: 0;
+.content h1, .content h2, .content h3, .content h4, .content h5, .content h6 {
+    margin: 0.4em auto 0 auto;
 }
-
-.nav-menu a:hover {
-    border-right-color: var(--menu-color);
-    color: var(--menu-color);
-    background: #fff;
+.content h1 { 
+    text-align: left;
+    font-size: 20px;
 }
-
-.nav-menu ion-icon {
-    display: block;
-}
-
-.nav-menu .active {
-    border-right-color: var(--menu-color);
-    color: var(--menu-color);
-}
-
-#toggle-menu-button {
-    position: fixed;
-    top:  1rem;
-    right:  1rem;
-}
-
-
-/**************
-* MAIN CONTENT
-**************/
-.content {
-    height: 100vh;
-}
-
-@media (min-width: 1024px) {
-    .main-content {
-        padding-left: 7.5rem;
-    }
-}
-
-.page {
-    min-height: 100vh;
-    box-shadow: 1px 0 10px 2px gainsboro;
-}
-
+.content h2 { font-size: 18px; }
+.content h3 { font-size: 16px; }
+.content h4 { font-size: 16px; font-style: italic; text-decoration: underline; }
+.content h5 { font-size: 16px; font-weight: normal; font-style: italic; text-decoration: underline; }
+.content h6 { font-size: 16px; font-weight: normal; font-style: normal; text-decoration: underline; }
+.content h1 ~ p { margin-top: 0.2em; }

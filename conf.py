@@ -7,5 +7,5 @@ CONTENT_DIR='content'
 BLOG_DIR='blog'
 TEMPLATE_DIR='templates'
 CNAME = 'felipelucio.geo.br'
-DEFAULT_CATEGORY='Outros'
+DEFAULT_CATEGORY='outros'
 COPY_DIRS=['files']

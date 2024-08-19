@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Felipe Lucio</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/codehilite.css">
+  </head>
+  <body>
+    <h1 id="site_title">Felipe Lucio</h1>
+    <nav id="nav-menu">
+      <a href="/index.html">Home</a>
+      <a href="/links.html">Links</a>
+      <a href="/whoami.html">Quem sou?</a>
+    </nav>
+    <hr />
+<article>
+  <h2>CMakeLists simples e direto</h2>
+  <div class="date">
+    Escrito em 2024-08-18
+  </div>
+  <hr />
+  <div class="content">
+    <p>Tenho uma dificuldade imensa em iniciar projetos no CMake.<br />
+Sempre é um parto me entender com a DSL confusa dele.<br />
+Pensando nisso, resolvi deixar esse CMakeLists simples para meu eu do futuro (boa sorte, camarada!).</p>
+
+<h1>Disclaimer</h1>
+
+<p>Esse é um CMakeLists para iniciar um projeto de aplicação simples (ou seja, não serve para libs ou qualquer coisa para uso "público").<br />
+A ideia é usar ao máximo o sistema de download automático de dependências do próprio CMake (FetchContent).<br />
+As definições de constantes são feitas no src/config.h.in<br />
+Não gosto de usar o esquema de BLOB para adicionar os .c/.h de modo "automático". É só adicionar os arquivos desejados no add_executable.</p>
+
+<h1>TODO</h1>
+
+<ul>
+<li>Criar o script para empacotar as versões Release (copiar as pastas de resources, otimizações, etc.)</li>
+</ul>
+
+<h1>O Código</h1>
+
+<div class="codehilite">
+<pre><span></span><code><span class="nb">cmake_minimum_required</span><span class="p">(</span><span class="s">VERSION</span><span class="w"> </span><span class="s">3.27</span><span class="p">)</span>
+<span class="nb">project</span><span class="p">(</span><span class="s">nome_do_projeto</span><span class="p">)</span>
+
+<span class="nb">set</span><span class="p">(</span><span class="s">ENGINE_ROOT_DIR</span><span class="w"> </span><span class="o">${</span><span class="nv">CMAKE_SOURCE_DIR</span><span class="o">}</span><span class="p">)</span>
+<span class="nb">configure_file</span><span class="p">(</span><span class="s">src/config.h.in</span><span class="w"> </span><span class="s">src/config.h</span><span class="p">)</span>
+<span class="nb">include_directories</span><span class="p">(</span><span class="o">${</span><span class="nv">CMAKE_BINARY_DIR</span><span class="o">}</span><span class="s">/src</span><span class="p">)</span>
+
+<span class="nb">add_executable</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span>
+<span class="w">    </span><span class="s">src/main.c</span>
+<span class="p">)</span>
+
+<span class="c"># DEPENDENCIES</span>
+<span class="nb">include</span><span class="p">(</span><span class="s">FetchContent</span><span class="p">)</span>
+<span class="nb">find_package</span><span class="p">(</span><span class="s">OpenGL</span><span class="w"> </span><span class="s">REQUIRED</span><span class="p">)</span>
+
+<span class="nb">FetchContent_Declare</span><span class="p">(</span>
+<span class="w">        </span><span class="s">SDL2</span>
+<span class="w">        </span><span class="s">GIT_REPOSITORY</span><span class="w"> </span><span class="s">https://github.com/libsdl-org/SDL.git</span>
+<span class="w">        </span><span class="s">GIT_TAG</span><span class="w"> </span><span class="s">release-2.30.6</span>
+<span class="w">        </span><span class="s">GIT_SHALLOW</span><span class="w"> </span><span class="s">TRUE</span>
+<span class="w">        </span><span class="s">GIT_PROGRESS</span><span class="w"> </span><span class="s">TRUE</span>
+<span class="p">)</span>
+<span class="nb">FetchContent_MakeAvailable</span><span class="p">(</span><span class="s">SDL2</span><span class="p">)</span>
+
+<span class="nb">FetchContent_Declare</span><span class="p">(</span>
+<span class="w">    </span><span class="s">cglm</span>
+<span class="w">    </span><span class="s">GIT_REPOSITORY</span><span class="w"> </span><span class="s">https://github.com/recp/cglm.git</span>
+<span class="w">    </span><span class="s">GIT_TAG</span><span class="w"> </span><span class="s">v0.9.4</span>
+<span class="p">)</span>
+<span class="nb">FetchContent_MakeAvailable</span><span class="p">(</span><span class="s">cglm</span><span class="p">)</span>
+
+<span class="nb">target_link_libraries</span><span class="p">(</span><span class="o">${</span><span class="nv">PROJECT_NAME</span><span class="o">}</span><span class="w"> </span><span class="s">PRIVATE</span><span class="w"> </span><span class="s">opengl32</span><span class="w"> </span><span class="s">cglm</span><span class="w"> </span><span class="s">SDL2::SDL2main</span><span class="w"> </span><span class="s">SDL2::SDL2</span><span class="p">)</span>
+</code></pre>
+</div>
+
+  </div>
+</article>
+    <a href="#site_title" class="to-top-link">&Uparrow;</a>
+  </body>
+</html>

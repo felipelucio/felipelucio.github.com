@@ -19,6 +19,12 @@ logger = logging.getLogger()
 DB_FILE = 'posts.db'
 MANDATORY_FIELDS = ['title', 'date']
 CWD = os.path.dirname(os.path.abspath(__file__))
+MD_EXTS=["extra", "meta", "codehilite"]
+
+def markdown_filter_file(md_file):
+    with open(md_file, 'r') as f:
+        result = markdown(f.read(), extras=['target-blank-links'])
+    return result
 
 class LuciusGen:
     def __init__(self, cwd, _config):
@@ -36,6 +42,10 @@ class LuciusGen:
         self.post_template = self.render.get_template('post.html')
         self.index_template = self.render.get_template('index.html')
         self.category_template = self.render.get_template('category.html')
+        self.static_templates = {
+            "whoami.html": self.render.get_template('whoami.html'),
+            "links.html": self.render.get_template("links.html")
+        }
 
     def list_content(self):
         files = Path(self.content_path).rglob('*.md')
@@ -43,11 +53,10 @@ class LuciusGen:
 
     def generate_index(self):
         print('* Generating index.html')
-        self.index_template = self.render.get_template('index.html')
         
         index_data = {
             'site': self.site_data,
-            'posts': self.posts_meta.values(),
+            'posts': self.sorted_posts_meta(),
             'blog_path': self.conf.BLOG_DIR
         }
         index_html = self.index_template.render(index_data)
@@ -57,12 +66,32 @@ class LuciusGen:
             file.write(index_html)
             print("  -- index.html created!")
 
+    def generate_static(self):
+        print('* Generating static files')
+        
+        data = {
+            'site': self.site_data,
+            'blog_path': self.conf.BLOG_DIR,
+            'markdown_render': markdown_filter_file
+        }
+
+        for out_file, templ in self.static_templates.items():
+            html = templ.render(data)
+            file_path = os.path.join(self.cwd, self.output_path, out_file)
+            os.makedirs(os.path.dirname(file_path), exist_ok=True)
+            with open(file_path, 'w', encoding='utf-8') as file:
+                file.write(html)
+                print("  -- {} created!".format(out_file))
+
 
     def generate_post(self, file_path):
         print('* Generating post {}'.format(file_path))
         post_file = os.path.join(self.cwd, file_path)
         with open(post_file, 'r', encoding='utf-8') as file:
-            post = markdown(file.read(), extras=['metadata'])
+            post = markdown(file.read(), extras={'metadata':{}, 
+                                                 'fenced-code-blocks':{}, 'strike':{}, 
+                                                 'tables':{}, 'footnotes':{}, 'breaks': {'on_backslash': True}
+                                                })
             
             is_ok = True
             # check some mandatory metadata
@@ -153,14 +182,20 @@ class LuciusGen:
         with open(dbfile, 'w', encoding='utf-8') as file:
             json.dump(self.posts_meta, file)
 
+    def sorted_posts_meta(self):
+        posts = []
+        for k in self.posts_meta:
+            posts.append(self.posts_meta[k])
+        posts.sort(reverse=True, key=lambda p: p['date'])
+        return posts
+
     def update(self):
-        self.post_template = self.render.get_template('post.html')
         self.load_db()
         files = self.list_content()
         for file in files:
             if str(file) not in self.posts_meta:
                 self.generate_post(file)
-        
+               
         self.copy_template_files()
         self.generate_index()
         self.generate_categories()
@@ -168,7 +203,6 @@ class LuciusGen:
         self.save_db()
 
     def generate_all(self):
-        self.post_template = self.render.get_template('post.html')
         self.clear_output()
 
         files = self.list_content()
@@ -176,6 +210,7 @@ class LuciusGen:
             self.generate_post(file)
         
         self.copy_template_files()
+        self.generate_static()
         self.generate_index()
         self.generate_categories()
         self.generate_CNAME()
@@ -190,8 +225,10 @@ class LuciusGen:
             if not categories.get(cat):
                 categories[cat] = []
             categories[cat].append(post)
-
+        
         for cat in categories:
+            categories[cat].sort(reverse=True, key=lambda p: p['date'])
+
             cat_html = self.category_template.render({
                 'site': self.site_data,
                 'category': cat, 
@@ -199,7 +236,7 @@ class LuciusGen:
                 'blog_path': self.conf.BLOG_DIR
             })
             slug = slugify(cat, only_ascii=True)
-            cat_file_path = os.path.join(self.cwd, self.output_path, 'category', '{}.html'.format(slug))
+            cat_file_path = os.path.join(self.cwd, self.output_path, self.conf.BLOG_DIR, 'category', '{}.html'.format(slug))
             os.makedirs(os.path.dirname(cat_file_path), exist_ok=True)
             with open(cat_file_path, 'w', encoding='utf-8') as file:
                 file.write(cat_html)
@@ -214,38 +251,42 @@ if __name__ == '__main__':
     import socketserver
     import functools
 
-    HTTP_PORT = 8000
-    generator = LuciusGen(CWD, conf)
-    generator.generate_all()
+    if "--serve" in sys.argv:
 
-    def event_proc(event):
+        HTTP_PORT = 8000
+        generator = LuciusGen(CWD, conf)
         generator.generate_all()
 
-    patterns = ['*']
-    ignore_patterns = [
-        os.path.join('.', conf.OUTPUT_DIR)+'*', 
-        os.path.join('.', DB_FILE)
-    ]
-    ignore_dirs = False
-    case_sensitive = True
-    event_handler = PatternMatchingEventHandler(patterns, ignore_patterns, 
-        ignore_dirs, case_sensitive)
-    
-    event_handler.on_any_event = event_proc
+        def event_proc(event):
+            generator.generate_all()
 
-    observer = Observer()
-    observer.schedule(event_handler, '.', True)
+        patterns = ['*']
+        ignore_patterns = [
+            os.path.join('.', conf.OUTPUT_DIR)+'*', 
+            os.path.join('.', DB_FILE)
+        ]
+        ignore_dirs = False
+        case_sensitive = True
+        event_handler = PatternMatchingEventHandler(patterns, ignore_patterns, 
+            ignore_dirs, case_sensitive)
+        
+        event_handler.on_any_event = event_proc
 
-    observer.start()
-    try:
-        serve_path = os.path.join(CWD, conf.OUTPUT_DIR)
-        Handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=serve_path)
-        with socketserver.TCPServer(("", HTTP_PORT), Handler) as httpd:
-            print("serving at port", HTTP_PORT)
-            httpd.serve_forever()
-    except KeyboardInterrupt:
-        observer.stop()
-        observer.join()
+        observer = Observer()
+        observer.schedule(event_handler, '.', True)
+
+        observer.start()
+        try:
+            serve_path = os.path.join(CWD, conf.OUTPUT_DIR)
+            Handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=serve_path)
+            with socketserver.TCPServer(("", HTTP_PORT), Handler) as httpd:
+                print("serving at port", HTTP_PORT)
+                httpd.serve_forever()
+        except KeyboardInterrupt:
+            observer.stop()
+            observer.join()
+    else:
+        LuciusGen(CWD, conf).generate_all()
     
 
     
