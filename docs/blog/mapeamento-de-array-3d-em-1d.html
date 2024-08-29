@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Felipe Lucio</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/codehilite.css">
+  </head>
+  <body>
+    <h1 id="site_title">Felipe Lucio</h1>
+    <nav id="nav-menu">
+      <a href="/index.html">Home</a>
+      <a href="/links.html">Links</a>
+      <a href="/whoami.html">Quem sou?</a>
+    </nav>
+    <hr />
+<article>
+  <h2>Mapeamento de array 3D em 1D</h2>
+  <div class="date">
+    Escrito em 2024-08-28
+  </div>
+  <hr />
+  <div class="content">
+    <p>O "achatamento" de um array 3D em 1D é uma operação muito utilizada para a simplificação e otimização da alocação de memória, 
+seja em linguagens como o C (na qual acho meio chato trabalhar com arrays com mais de uma dimensão), 
+seja em linguagens como Python (na qual existe um <em>overhead</em> com a alocação de várias listas).</p>
+
+<p>Apesar de relativamente simples, sempre que preciso utilizar tenho que gastar um tempo enorme buscando na internet ou em meus códigos antigos.</p>
+
+<p>Por isso, resolvi deixar aqui os algoritmos que costumo utilizar na tranformação em ambos os sentidos. </p>
+
+<p><strong>IMPORTANTE</strong></p>
+
+<p>Nos casos listados aqui, a ordem de crescimento do array é convencionada em X &gt; Y &gt; Z 
+Ou seja, para um universo de tamanho 10x10x10:</p>
+
+<pre><code>Pos (x, y, z) | Índice
+-------------------------
+(0, 0, 0)     | 0
+(1, 0, 0)     | 1
+(0, 1, 0)     | 10
+(0, 0, 1)     | 100
+</code></pre>
+
+<h1>De 3D para 1D</h1>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># dimensões máximas dos eixos X, Y e Z</span>
+<span class="n">sizeX</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">sizeY</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">sizeZ</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="c1"># as coordenadas do ponto desejado</span>
+<span class="n">posX</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">posY</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">posZ</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">posZ</span> <span class="o">*</span> <span class="n">sizeY</span> <span class="o">*</span> <span class="n">sizeX</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">posY</span> <span class="o">*</span> <span class="n">sizeX</span><span class="p">)</span> <span class="o">+</span> <span class="n">posX</span>
+</code></pre>
+</div>
+
+<h1>De 1D para 3D</h1>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># um índice qualquer</span>
+<span class="n">index</span> <span class="o">=</span> <span class="mi">12</span>
+
+<span class="c1"># o calculo das coordenadas</span>
+<span class="n">posZ</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">index</span> <span class="o">/</span> <span class="p">(</span><span class="n">sizeY</span> <span class="o">*</span> <span class="n">sizeX</span><span class="p">))</span>
+<span class="n">posY</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">((</span><span class="n">index</span> <span class="o">-</span> <span class="p">(</span><span class="n">posZ</span> <span class="o">*</span> <span class="n">sizeY</span> <span class="o">*</span> <span class="n">sizeX</span><span class="p">))</span> <span class="o">/</span> <span class="n">sizeX</span><span class="p">)</span>
+<span class="n">posX</span> <span class="o">=</span> <span class="n">index</span> <span class="o">%</span> <span class="n">sizeX</span>
+</code></pre>
+</div>
+
+<h1>De 2D para 1D</h1>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># dimensões máximas dos eixos X, Y</span>
+<span class="n">sizeX</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">sizeY</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="c1"># as coordenadas do ponto desejado</span>
+<span class="n">posX</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">posY</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">posY</span> <span class="o">*</span> <span class="n">sizeX</span><span class="p">)</span> <span class="o">+</span> <span class="n">posX</span>
+</code></pre>
+</div>
+
+<h1>De 1D para 2D</h1>
+
+<div class="codehilite">
+<pre><span></span><code><span class="c1"># um índice qualquer</span>
+<span class="n">index</span> <span class="o">=</span> <span class="mi">12</span>
+
+<span class="c1"># o calculo das coordenadas</span>
+<span class="n">posX</span> <span class="o">=</span> <span class="n">index</span> <span class="o">%</span> <span class="n">sizeX</span>
+<span class="n">posY</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">index</span> <span class="o">/</span> <span class="n">sizeX</span><span class="p">)</span>
+</code></pre>
+</div>
+
+  </div>
+</article>
+    <a href="#site_title" class="to-top-link">&Uparrow;</a>
+  </body>
+</html>
