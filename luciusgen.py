@@ -1,5 +1,5 @@
 import os, sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 import json
 import logging
@@ -9,6 +9,8 @@ from jinja2 import Environment, FileSystemLoader
 from markdown2 import markdown
 from slugify import slugify
 from watchdog import observers
+
+from feedgen.feed import FeedGenerator
 
 import conf
 
@@ -37,6 +39,14 @@ class LuciusGen:
         self.render.trim_blocks = True
         self.render.lstrip_blocks = True
         self.site_data = conf.SITE_DATA
+
+        self.feedgen = FeedGenerator()
+        self.feedgen.id("https://{}".format(conf.CNAME))
+        self.feedgen.title(conf.SITE_DATA['title'])
+        self.feedgen.author({ "name": conf.SITE_DATA['author'] })
+        self.feedgen.link(href="https://{}/{}".format(conf.CNAME, conf.ATOM_FILE), rel="self")
+        self.feedgen.language('pt-BR')
+        self.feedgen.updated(datetime.now(timezone.utc))
 
         # pre-load the templates
         self.post_template = self.render.get_template('post.html')
@@ -115,15 +125,18 @@ class LuciusGen:
                 post.metadata['category'] = self.conf.DEFAULT_CATEGORY
 
             # generate the html file
+            post_uri = os.path.join(self.output_path, 
+                self.conf.BLOG_DIR, '{}.html'.format(slug))
+            
             post_data = {
                 'site': self.site_data,
                 'content': post,
                 'post': post.metadata,
-                'blog_path': self.conf.BLOG_DIR
+                'blog_path': self.conf.BLOG_DIR,
+                'post_uri': post_uri
             }
+            post_file_path = os.path.join(self.cwd, post_uri)
             post_html = self.post_template.render(post_data)
-            post_file_path = os.path.join(self.cwd, self.output_path, 
-                self.conf.BLOG_DIR, '{}.html'.format(slug))
             os.makedirs(os.path.dirname(post_file_path), exist_ok=True)
             with open(post_file_path, 'w', encoding='utf-8') as file:
                 file.write(post_html)
@@ -134,7 +147,24 @@ class LuciusGen:
 
             self.copy_post_files(os.path.dirname(file_path))
 
+            self.atom_entry(post_data)
+
             return True
+        
+    def atom_entry(self, post):
+        entry = self.feedgen.add_entry()
+        url = "https://{}/{}".format(conf.CNAME, post['post_uri'])
+        entry.id(url)
+        entry.title(post['post']['title'])
+        entry.link(href=url)
+        # entry.category(post['post']['category'])
+        entry.published(datetime.fromisoformat(post['post']['date']).astimezone(timezone.utc))
+        if post['post'].get('update_date'):
+            entry.updated(datetime.fromisoformat(post['post']['update_date']).astimezone(timezone.utc))
+        else:
+            entry.updated(datetime.fromisoformat(post['post']['date']).astimezone(timezone.utc))
+            
+        # entry.description(post['post'][''])
 
     def copy_post_files(self, root_dir):
         for src_dir in self.conf.COPY_DIRS:
@@ -214,6 +244,7 @@ class LuciusGen:
         self.generate_index()
         self.generate_categories()
         self.generate_CNAME()
+        self.feedgen.atom_file(os.path.join(self.cwd, self.conf.OUTPUT_DIR, self.conf.ATOM_FILE), pretty=True)
         self.save_db()
 
     def generate_categories(self):
