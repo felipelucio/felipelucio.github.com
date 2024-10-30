@@ -1,25 +1,25 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="pt-BR">
-  <id>https://felipelucio.geo.br</id>
+  <id>https://felipelucio.geo.br/</id>
   <title>Felipe Lucio</title>
-  <updated>2024-10-30T20:07:03.311680+00:00</updated>
+  <updated>2024-10-30T20:18:09.326349+00:00</updated>
   <author>
     <name>Felipe Lucio</name>
   </author>
   <link href="https://felipelucio.geo.br/feed.atom" rel="self"/>
   <generator uri="https://lkiesow.github.io/python-feedgen" version="1.0.0">python-feedgen</generator>
   <entry>
-    <id>https://felipelucio.geo.br/docs\blog\mapeamento-de-array-3d-em-1d.html</id>
+    <id>https://felipelucio.geo.br/blog/mapeamento-de-array-3d-em-1d.html</id>
     <title>Mapeamento de array 3D em 1D</title>
     <updated>2024-08-28T03:00:00+00:00</updated>
-    <link href="https://felipelucio.geo.br/docs\blog\mapeamento-de-array-3d-em-1d.html"/>
+    <link href="https://felipelucio.geo.br/blog/mapeamento-de-array-3d-em-1d.html"/>
     <published>2024-08-28T03:00:00+00:00</published>
   </entry>
   <entry>
-    <id>https://felipelucio.geo.br/docs\blog\cmakelists-simples-e-direto.html</id>
+    <id>https://felipelucio.geo.br/blog/cmakelists-simples-e-direto.html</id>
     <title>CMakeLists simples e direto</title>
     <updated>2024-08-18T03:00:00+00:00</updated>
-    <link href="https://felipelucio.geo.br/docs\blog\cmakelists-simples-e-direto.html"/>
+    <link href="https://felipelucio.geo.br/blog/cmakelists-simples-e-direto.html"/>
     <published>2024-08-18T03:00:00+00:00</published>
   </entry>
 </feed>

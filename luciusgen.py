@@ -41,7 +41,7 @@ class LuciusGen:
         self.site_data = conf.SITE_DATA
 
         self.feedgen = FeedGenerator()
-        self.feedgen.id("https://{}".format(conf.CNAME))
+        self.feedgen.id("https://{}/".format(conf.CNAME))
         self.feedgen.title(conf.SITE_DATA['title'])
         self.feedgen.author({ "name": conf.SITE_DATA['author'] })
         self.feedgen.link(href="https://{}/{}".format(conf.CNAME, conf.ATOM_FILE), rel="self")
@@ -125,8 +125,8 @@ class LuciusGen:
                 post.metadata['category'] = self.conf.DEFAULT_CATEGORY
 
             # generate the html file
-            post_uri = os.path.join(self.output_path, 
-                self.conf.BLOG_DIR, '{}.html'.format(slug))
+            post_uri = 'https://{}/{}/{}.html'.format(self.conf.CNAME, 
+                self.conf.BLOG_DIR, slug)
             
             post_data = {
                 'site': self.site_data,
@@ -135,7 +135,8 @@ class LuciusGen:
                 'blog_path': self.conf.BLOG_DIR,
                 'post_uri': post_uri
             }
-            post_file_path = os.path.join(self.cwd, post_uri)
+            post_file_path = os.path.join(self.cwd, os.path.join(self.output_path, 
+                self.conf.BLOG_DIR, '{}.html'.format(slug)))
             post_html = self.post_template.render(post_data)
             os.makedirs(os.path.dirname(post_file_path), exist_ok=True)
             with open(post_file_path, 'w', encoding='utf-8') as file:
@@ -153,10 +154,9 @@ class LuciusGen:
         
     def atom_entry(self, post):
         entry = self.feedgen.add_entry()
-        url = "https://{}/{}".format(conf.CNAME, post['post_uri'])
-        entry.id(url)
+        entry.id(post['post_uri'])
+        entry.link(href=post['post_uri'])
         entry.title(post['post']['title'])
-        entry.link(href=url)
         # entry.category(post['post']['category'])
         entry.published(datetime.fromisoformat(post['post']['date']).astimezone(timezone.utc))
         if post['post'].get('update_date'):
